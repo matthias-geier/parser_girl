@@ -24,10 +24,8 @@ class ParserGirl
         end
 
         if content =~ /^#{needle}(\s.*)?$/i
-          #puts "Found begin at #{b}, #{e}, #{pos}: #{content}"
           push({:position => pos+e, :attrs => split_attr($1)})
         elsif content =~ /^\/#{needle}(\s.*)?$/i
-          #puts "Found end at #{b}, #{e}, #{pos}: #{content}"
           hash = pop(haystack_base, b+pos-1)
           if hash
             if block_given?
@@ -65,7 +63,6 @@ class ParserGirl
     attr_hash = {}
     while(1)
       if attrs =~ /\s*([^=]+)=((\"([^\"]+)\")|(\'([^\']+)\')|([^\s]+))/
-        #puts "$1=#{$1} $2=#{$2} $3=#{$3} $4=#{$4} $5=#{$5} $6=#{$6} $7=#{$7} "
         attrs = $'
         key = $1
         value = nil

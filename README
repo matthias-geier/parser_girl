@@ -1,4 +1,34 @@
-parser_girl
-===========
+ParserGirl is minimal very fast xml/html parser.
 
-A minimal very fast xml/html parser
+It consists of exactly one method, "find" which will take a tag-name like "div"
+or "a" as string. "find" returns an array of results. It takes a block and
+offers tag content and tag attributes as block parameters.
+
+The search haystack can either be set in the constructor or given with "find" as
+second param.
+
+
+Sample finds are:
+
+p = ParserGirl.new
+
+
+#without haystack "find" takes the haystack from constructor if given
+result_array = p.find("a", haystack) do |tag_content, tag_attributes|
+  #tag_content is String
+  #tag_attributes is Hash
+  if tag_attributes[:href] =~ /imdb\.com/
+    #search in tag content for more
+    p.find("span", tag_content) do |span_content, span_attr|
+      "span contains #{span_content}"
+    end #do nothing with the result and return it
+  end
+end.compact.flatten #throw away nil values and flatten the spans
+
+puts result_array.join("\n")
+
+
+#calling "find" without block returns an array of tag_contents
+result_array = p.find("a", haystack).compact
+
+puts result_array.join("\n")
