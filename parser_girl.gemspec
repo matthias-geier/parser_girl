@@ -1,6 +1,6 @@
 Gem::Specification.new do |s|
-  s.name = "ParserGirl"
-  s.version = '1.0.0'
+  s.name = "parser_girl"
+  s.version = '1.1.0'
   s.summary = "A minimal very fast xml/html parser"
   s.author = "Matthias Geier"
   s.homepage = "https://github.com/matthias-geier/parser_girl"

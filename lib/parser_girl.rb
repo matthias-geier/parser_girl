@@ -41,6 +41,14 @@ class ParserGirl
         break
       end
     end
+    # pop rest
+    while @stack.any?
+      hash = @stack.pop
+      if block_given?
+        @result.push(yield("", hash[:attrs]))
+      end
+    end
+
     @result
   end
 
