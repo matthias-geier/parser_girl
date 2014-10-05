@@ -1,34 +1,64 @@
-ParserGirl is minimal very fast xml/html parser.
+# ParserGirl is minimal very fast xml/html parser.
 
 It consists of exactly one method, "find" which will take a tag-name like "div"
-or "a" as string. "find" returns an array of results. It takes a block and
-offers tag content and tag attributes as block parameters.
+or "a" as string. "find" returns a Proxy of results that exposes either the
+resultset array or a new instance of the parser to any method called.
 
-The search haystack can either be set in the constructor or given with "find" as
-second param.
+The HTML or XML fed to the parser should be newline-free!
 
+### Sample finds are:
 
-Sample finds are:
+```ruby
+  p = ParserGirl.new(ANY_XML)
+  proxy = p.find("div")
+  proxies_inside_proxy = proxy.find("a")
+```
 
-p = ParserGirl.new
+### Accessing attributes and content
 
+```ruby
+  div_inside_parser_object = ParserGirl.find(ANY_HTML, "div").first
+  div_inside_parser_object.content
+  => "<i>This is my content</i>"
+  div_inside_parser_object.to_h
+  => { :class => "btn cookies", :id => "button1" }
+  div_inside_parser_object[:class]
+  => "btn_cookies"
+```
 
-#without haystack "find" takes the haystack from constructor if given
-result_array = p.find("a", haystack) do |tag_content, tag_attributes|
-  #tag_content is String
-  #tag_attributes is Hash
-  if tag_attributes[:href] =~ /imdb\.com/
-    #search in tag content for more
-    p.find("span", tag_content) do |span_content, span_attr|
-      "span contains #{span_content}"
-    end #do nothing with the result and return it
+### Easy mapping through results
+
+As a sidenote, when the proxy only contains ONE result, it will remove the
+array around it automatically.
+
+```ruby
+  divs_inside_proxy = ParserGirl.find(ANY_HTML, "div")
+  divs_inside_proxy.content
+  => ["First div content", "Second div content", ...]
+  divs_inside_proxy.to_h
+  => [{ :class => "div 1" }, ...]
+  divs_inside_proxy[:class]
+  => ["class of div1", "class of div2", nil, "class of div4"]
+```
+
+### Enumerating through results
+
+```ruby
+  divs_inside_proxy = ParserGirl.find(ANY_HTML, "div")
+  only_divs = divs_inside_proxy.to_a
+
+  divs_inside_proxy.reduce([]) do |acc, div|
+    if div[:class].include?("btn")
+      acc << div.find("a").first
+    end
+    next acc
   end
-end.compact.flatten #throw away nil values and flatten the spans
+```
 
-puts result_array.join("\n")
+## Tests
 
+Clone the repository, navigate into the root and execute this command:
 
-#calling "find" without block returns an array of tag_contents
-result_array = p.find("a", haystack).compact
-
-puts result_array.join("\n")
+```bash
+  ruby -Ilib test/test_runner.rb
+```
