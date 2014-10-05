@@ -1,5 +1,3 @@
-require 'parser_girl'
-
 HTML = <<EOF.gsub(/[\n\r]/, '')
 <body>
   <div class="btn zort" id="troz">
